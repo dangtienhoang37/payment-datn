@@ -22,11 +22,12 @@ public class PaymentTransaction {
 
     int amount;
     long orderCode;
+    long balance;
     @Enumerated(EnumType.ORDINAL)
     PaymentStatus paymentStatus;
 
 
-    @JoinColumn(name = "wallet_id", referencedColumnName = "id")
+    @JoinColumn(name = "walletId", referencedColumnName = "id")
     @ManyToOne
     TransactionWallet transactionWallet;
 

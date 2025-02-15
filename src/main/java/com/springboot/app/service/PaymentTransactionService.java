@@ -7,4 +7,6 @@ public interface PaymentTransactionService {
     ApiResponse getDetailUserWallet(String token);
 
     ApiResponse subBalance(SubBalanceRequest request);
+
+    ApiResponse getHistory(String token);
 }

@@ -18,6 +18,10 @@ public class userPaymentController {
     public ApiResponse getDetailWallet(@RequestHeader("Authorization") String token ) {
         return paymentTransactionService.getDetailUserWallet(token);
     }
+    @GetMapping("/history")
+    public ApiResponse getHistory(@RequestHeader("Authorization") String token ) {
+        return paymentTransactionService.getHistory(token);
+    }
     // internal request handler
     @PostMapping("/sub-balance")
     public ApiResponse internalSubBalance(@RequestBody SubBalanceRequest request){

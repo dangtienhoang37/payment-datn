@@ -1,5 +1,8 @@
 package com.springboot.app.service.impl;
 
+import com.springboot.app.entity.PaymentStatus;
+import com.springboot.app.entity.PaymentTransaction;
+import com.springboot.app.repository.PaymentTransactionRepository;
 import com.springboot.app.repository.WalletRepository;
 import com.springboot.app.request.SubBalanceRequest;
 import com.springboot.app.response.ApiResponse;
@@ -17,6 +20,8 @@ public class PaymentTransactionServiceImpl implements PaymentTransactionService 
     private JwToken jwToken;
     @Autowired
     private WalletRepository walletRepository;
+    @Autowired
+    private PaymentTransactionRepository paymentTransactionRepository;
     @Override
     public ApiResponse getDetailUserWallet(String token) {
 
@@ -47,12 +52,37 @@ public class PaymentTransactionServiceImpl implements PaymentTransactionService 
             throw new RuntimeException("Số dư không đủ, vui lòng nạp thêm");
         }
         targetWallet.setBalance(targetWallet.getBalance() - outstandingBalance);
-
+        new PaymentTransaction();
+        paymentTransactionRepository.save(PaymentTransaction.builder()
+                        .transactionWallet(targetWallet)
+                        .paymentStatus(PaymentStatus.SUCESS)
+                        .balance(targetWallet.getBalance())
+                        .amount(-outstandingBalance)
+                        .orderCode(-1)
+                .build());
         ApiResponse response= ApiResponse.builder()
                 .code(1000)
                 .message(" sub transaction  sucessfully")
                 .isSucess(true)
                 .data(walletRepository.save(targetWallet))
+                .build();
+        return response;
+    }
+
+    @Override
+    public ApiResponse getHistory(String token) {
+        var accountId = jwToken.getIdFromToken(token);
+        var targetWallet = walletRepository.findByAccountId(accountId).orElse(null);
+        if(Objects.isNull(targetWallet)){
+            throw new RuntimeException("cant find wallet");
+        }
+        var targetHistory = paymentTransactionRepository.findByTransactionWallet(targetWallet);
+
+        ApiResponse response= ApiResponse.builder()
+                .code(1000)
+                .message("history")
+                .isSucess(true)
+                .data(targetHistory)
                 .build();
         return response;
     }

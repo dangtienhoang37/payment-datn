@@ -1,6 +1,7 @@
 package com.springboot.app;
 
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,9 @@ import org.springframework.context.annotation.Lazy;
 
 
 import vn.payos.PayOS;
+
+import java.util.TimeZone;
+
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @Configuration
 @EnableDiscoveryClient
@@ -36,5 +40,9 @@ public class SpringbootBackendPayosApplication  {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringbootBackendPayosApplication.class, args);
+	}
+	@PostConstruct
+	public void init() {
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 	}
 }

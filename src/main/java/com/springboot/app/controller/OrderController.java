@@ -11,6 +11,7 @@ import com.springboot.app.repository.PaymentTransactionRepository;
 import com.springboot.app.repository.WalletRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +35,14 @@ public class OrderController {
     private PaymentTransactionRepository paymentTransactionRepository;
     @Autowired
     private WalletRepository walletRepository;
+    @Value("${PAYOS_CLIENT_ID}")
+    private String clientId;
+
+    @Value("${PAYOS_API_KEY}")
+    private String apiKey;
+
+    @Value("${PAYOS_CHECKSUM_KEY}")
+    private String checksumKey;
 
     public OrderController(PayOS payOS, PaymentTransactionRepository paymentTransactionRepository, WalletRepository walletRepository) {
         super();
@@ -94,6 +103,7 @@ public class OrderController {
                     .amount(data.getAmount())
                     .paymentStatus(PaymentStatus.valueOf(data.getStatus()))
                     .orderCode(data.getOrderCode())
+                    .balance(wallet.getBalance())
                     .transactionWallet(wallet)
                     .build();
             paymentTransactionRepository.save(newTransaction);
@@ -159,6 +169,13 @@ public class OrderController {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode response = objectMapper.createObjectNode();
         try {
+            System.out.println(clientId);
+            System.out.println( apiKey);
+
+            System.out.println( checksumKey);
+
+
+
             String str = payOS.confirmWebhook(requestBody.get("webhookUrl"));
             System.out.println("test cfwh"+str);
             response.set("data", objectMapper.valueToTree(str));
